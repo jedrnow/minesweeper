@@ -70,6 +70,7 @@ void Game::askForMove() {
 }
 
 void Game::endGame() {
+    saveStats(false);
     system("cls");
     string exploded = R"(
      ______      ___      ___   ____    ____  _  
@@ -87,6 +88,58 @@ void Game::endGame() {
     system("cls");
 }
 
+void Game::getStats() {
+    ifstream plik;
+    plik.open(this->w);
+    while (plik.good() != true)
+    {
+        cout << "Nie udalo sie zebrac statystyk!" << endl;
+    }
+    while(true){
+        string imie;
+        int wygrane;
+        int przegrane;
+        plik >> imie >> wygrane >> przegrane;
+        if (plik.fail()) {
+            break;
+        }
+
+        Player x(imie, wygrane, przegrane);
+        this->playerlist.push_back(x);
+    }
+    plik.close();
+
+
+}
+
+void Game::saveStats(bool win) {
+    ofstream plik;
+    plik.open(this->w);
+    while (plik.good() != true)
+    {
+        cout << "Nie udalo sie zapisac statystyk!";
+    }
+    for (int i = 0; i < playerlist.size(); i++) {
+        if (playerlist[i].getName() == this->i) {
+            if (win == true) {
+                playerlist[i].addWin();
+            }
+            else {
+                playerlist[i].addLose();
+            }
+        }
+    }
+
+    plik.clear();
+    for (int i = 0; i < playerlist.size(); i++) {
+        plik << playerlist[i].getName() << playerlist[i].getWin() << playerlist[i].getLose() << endl;
+    }
+    
+
+    plik.close();
+}
+
+
 void Game::Move(int x, int y) {
     vector<Block> list = this->board.getList();
     for (int i = 0; i < list.size(); i++) {
@@ -99,7 +152,15 @@ void Game::Move(int x, int y) {
                 this->board.Update();
                 this->board.fillNumbers();
                 this->board.Update();
-                askForMove();
+                if (this->board.ifEnd() == true) {
+                    saveStats(true);
+                    system("cls");
+                    std::cout << "Gratulacje wygrales!";
+
+                }
+                else {
+                    askForMove();
+                }
             }
         }
     }
@@ -108,6 +169,7 @@ void Game::Move(int x, int y) {
 
 
 void Game::StartGame() {
+    getStats();
 	Board board(this->x, this->y);
     this->board = board;
     board.fillNumbers();

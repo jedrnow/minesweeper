@@ -30,6 +30,8 @@ public:
 
 	void click(int x);
 
+	bool ifEnd();
+
 	Board();
 
 	Board(int x, int y);

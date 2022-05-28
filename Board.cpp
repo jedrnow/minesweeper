@@ -111,6 +111,15 @@ void Board::Update() {
 	std::cout << std::endl;
 }
 
+bool Board::ifEnd() {
+	for (int i = 0; i < this->list.size(); i++) {
+		if (this->list[i].getClicked() == false && this->list[i].gethasBomb() == false) {
+			return false;
+		}
+	}
+	return true;
+}
+
 Board::Board(int x, int y) {
 	this->x = x;
 	this->y = y;
@@ -136,7 +145,7 @@ Board::Board(int x, int y) {
 		}
 		for (int j = 0; j < x; j++) {
 			bomb = rand() % 100;
-			if (bomb < 30) {
+			if (bomb < 15) {
 				Block t(i, j, true);
 				t.Show();
 				this->list.push_back(t);
